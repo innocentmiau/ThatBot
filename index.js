@@ -13,6 +13,7 @@ setInterval(() => {
 const Discord = require('discord.js');
 const config = require("./config.json");
 const db = require('quick.db');
+const cooldown = require("./cooldown.js");
 
 const client = new Discord.Client();
 client.prefix = config.prefix;
@@ -29,8 +30,16 @@ client.on("message", async message => {
   
   let xp = await db.fetch(`xp_${user.id}`);
   if (xp === null) xp = 0;
-  var add = Math.floor(Math.random() * 15) + 10;
-  db.add(`xp_${user.id}`, add);
+  
+  if (!cooldown.is(user.id)) {
+    cooldown.add(user.id);
+    var add = Math.floor(Math.random() * 15) + 10;
+    db.add(`xp_${user.id}`, add);
+    setTimeout(() => {
+      cooldown.remove(user.id);
+    }, 1000 * 60);
+  }
+  
 
   if (message.content.indexOf(client.prefix) !== 0) return;
   const args = message.content.slice(client.prefix.length).trim().split(/ +/g);
