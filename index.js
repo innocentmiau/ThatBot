@@ -14,6 +14,7 @@ const Discord = require('discord.js');
 const config = require("./config.json");
 const db = require('quick.db');
 const cooldown = require("./cooldown.js");
+const utils = require("./utils.js");
 
 const client = new Discord.Client();
 client.prefix = config.prefix;
@@ -30,6 +31,8 @@ client.on("message", async message => {
   
   let xp = await db.fetch(`xp_${user.id}`);
   if (xp === null) xp = 0;
+  let level = await db.fetch(`level_${user.id}`);
+  if (level === null) level = 0;
   
   if (!cooldown.is(user.id)) {
     cooldown.add(user.id);
@@ -40,6 +43,19 @@ client.on("message", async message => {
     }, 1000 * 60);
   }
   
+  while (xp >= utils.need(level+1)) {
+    if (xp >= utils.need(level+1)) {
+      db.subtract(`xp_${user.id}`, utils.need(level+1));
+      db.add(`level_${user.id}`, 1);
+      xp = await db.fetch(`xp_${user.id}`);
+      level = await db.fetch(`level_${user.id}`);
+      let embed = new Discord.RichEmbed()
+        .setAuthor("LEVEL UP")
+        .setDescription("You leveled up to **Level " + level + "**!")
+        .setColor([54, 57, 163]);
+      message.channel.send(embed);
+    }
+  }
 
   if (message.content.indexOf(client.prefix) !== 0) return;
   const args = message.content.slice(client.prefix.length).trim().split(/ +/g);
