@@ -1,3 +1,4 @@
+/* global Map */
 const http = require('http');
 const express = require('express');
 const app = express();
@@ -18,6 +19,8 @@ const utils = require("./utils.js");
 
 const client = new Discord.Client();
 client.prefix = config.prefix;
+
+const active = new Map();
 
 client.on("ready", () => {
   console.log("Bot iniciado!\n\nUsers: " + client.users.size + "\nServidores: " + client.guilds.size);
@@ -62,8 +65,14 @@ client.on("message", async message => {
   const command = args.shift().toLowerCase();
 
   try {
+    
+    let ops = {
+      active: active
+    }
+    
     let commands = require(`./commands/${command}.js`);
-    commands.run(client, message, args);
+    commands.run(client, message, args, ops);
+    
   } catch (e) {
     console.log(e);
   } finally {}
