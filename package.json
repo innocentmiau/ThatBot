@@ -18,6 +18,9 @@
     "express": "^4.15.5",
     "quick.db": "^6.3.2",
     "canvas": "^2.0.1",
-    "node-superfetch": "^0.1.9"
+    "node-superfetch": "^0.1.9",
+    "ytdl-core": "^0.28.3",
+    "yt-search": "^0.4.1",
+    "node-opus": "^0.3.1"
   }
 }
