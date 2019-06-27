@@ -36,11 +36,14 @@ client.on("message", async message => {
   if (xp === null) xp = 0;
   let level = await db.fetch(`level_${user.id}`);
   if (level === null) level = 0;
+  let total_points = await db.fetch(`total_points_${user.id}`);
+  if (total_points === null) total_points = 0;
   
   if (!cooldown.is(user.id)) {
     cooldown.add(user.id);
     var add = Math.floor(Math.random() * 15) + 10;
     db.add(`xp_${user.id}`, add);
+    db.add(`total_points_${user.id}`, add);
     setTimeout(() => {
       cooldown.remove(user.id);
     }, 1000 * 60);
